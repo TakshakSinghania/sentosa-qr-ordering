@@ -1,7 +1,3 @@
-
-
-https://github.com/user-attachments/assets/c8bb4b6c-a791-4225-b241-0de07030a4ae
-
 # SENTOSA — THE COFFEE UNIT
 ## QR Ordering & Restaurant Operations System
 
@@ -35,11 +31,6 @@ https://github.com/user-attachments/assets/c8bb4b6c-a791-4225-b241-0de07030a4ae
 ## 🎬 Product Demo
 
 https://github.com/user-attachments/assets/c8bb4b6c-a791-4225-b241-0de07030a4ae
-
-<div align="center">
-  <img src="brag-output/brag.jpg" alt="Sentosa Product Walkthrough Poster" width="100%" style="max-width: 860px; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.25);" />
-  <p><sub><b>Sentosa — The Coffee Unit: 1080p Product Walkthrough & Operations Flow (21s)</b></sub></p>
-</div>
 
 ---
 
