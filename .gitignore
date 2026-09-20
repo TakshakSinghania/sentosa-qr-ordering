@@ -72,7 +72,8 @@ coverage/
 .turbo/
 .eslintcache
 
-# Video generator scratch files (preserve brag.mp4 and brag.jpg)
+# Video binary assets (hosted via GitHub user-attachments)
+*.mp4
 brag-output/composition/
 
 # Agent runtime metadata
