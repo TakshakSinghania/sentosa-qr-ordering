@@ -1,3 +1,7 @@
+
+
+https://github.com/user-attachments/assets/c8bb4b6c-a791-4225-b241-0de07030a4ae
+
 # SENTOSA — THE COFFEE UNIT
 ## QR Ordering & Restaurant Operations System
 
