@@ -577,8 +577,8 @@ http://localhost:4000/api
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/TakshakSinghania/qr.git
-cd qr
+git clone https://github.com/TakshakSinghania/sentosa-qr-ordering.git
+cd sentosa-qr-ordering
 ```
 
 ### 2. Install Dependencies
