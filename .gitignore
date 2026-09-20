@@ -1,0 +1,80 @@
+# ==============================================================================
+# Sentosa — The Coffee Unit: Git Ignore Configuration
+# ==============================================================================
+
+# Node dependencies
+node_modules/
+**/node_modules/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+out/
+client/dist/
+server/dist/
+
+# Environment configurations & secrets
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+!**/.env.example
+!.env.example
+
+# Local databases & dumps
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.sql.gz
+postgres.log
+
+# Logs & process files
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Operating System & File System metadata
+.DS_Store
+**/.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+ehthumbs.db
+
+# IDE & Editor files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.sublime-project
+*.sublime-workspace
+
+# Testing coverage & bundler cache
+coverage/
+.nyc_output/
+.vitest/
+.cache/
+.turbo/
+.eslintcache
+
+# Video generator scratch files (preserve brag.mp4 and brag.jpg)
+brag-output/composition/
+
+# Agent runtime metadata
+.agents/
+skills-lock.json

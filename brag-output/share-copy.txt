@@ -1,0 +1,1 @@
+Introducing Sentosa — The Coffee Unit: tabletop QR ordering and live kitchen dispatch designed like your café, not an airport kiosk. Scan Table 05, discover table-specific favorites, customize your craft brew, and order in seconds with phone-first OTP. Built with React, Tailwind CSS, WebSockets, Node.js, and Prisma.

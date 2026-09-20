@@ -1,0 +1,73 @@
+================================================================================
+  SENTOSA — THE COFFEE UNIT / QR ORDERING SYSTEM: QUICK START COMMANDS
+================================================================================
+
+1. QUICKEST WAY TO START (Run from project root)
+--------------------------------------------------------------------------------
+npm run dev
+
+  → Starts both the Backend API (Port 4000) and Frontend Vite Server (Port 5173)
+    concurrently in a single terminal window.
+
+
+2. MAKE SURE POSTGRESQL IS RUNNING (If not already running on Mac/Linux)
+--------------------------------------------------------------------------------
+brew services start postgresql@16
+# or:
+brew services start postgresql
+
+
+3. FIRST-TIME / FRESH DATABASE SETUP (If tables or seed data are missing)
+--------------------------------------------------------------------------------
+npm run db:migrate
+npm run db:seed
+
+
+4. RUNNING SEPARATE TERMINAL TABS (Optional alternative)
+--------------------------------------------------------------------------------
+Tab 1 (Backend API & Socket.IO):
+  cd server && npm run dev
+
+Tab 2 (Vite Frontend):
+  cd client && npm run dev
+
+
+5. RUN AUTOMATED ACCEPTANCE & SECURITY TESTS
+--------------------------------------------------------------------------------
+# Unit & integration tests (63 passed):
+cd server && npm test
+
+# Complete end-to-end user & staff flow (17 passed):
+cd server && npx tsx tests/e2e_verification.ts
+
+# RBAC authorization matrix (37 passed):
+cd server && npx tsx tests/rbac_authorization.ts
+
+# Production security audit (20 passed):
+cd server && npx tsx tests/production_security_audit.ts
+
+
+================================================================================
+  DEMO ACCESS URLS & CREDENTIALS
+================================================================================
+
+• Customer QR Menu (Table 05 — Sentosa):
+  http://localhost:5173/menu/sentosa/t/tbl_q7r8s9t0
+
+• Customer QR Menu (Table 05 — Demo Café):
+  http://localhost:5173/menu/demo-cafe/t/tbl_q7r8s9t0
+
+• Table Selection Demo Hub:
+  http://localhost:5173/
+
+• Kitchen Orders & Live Admin POS:
+  http://localhost:5173/admin
+
+  Logins:
+  - Manager Account:
+      Email:    admin@democafe.com
+      Password: admin123
+  - Staff Account:
+      Email:    staff@democafe.com
+      Password: staff123
+================================================================================

@@ -1,0 +1,294 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Restaurant {
+  id                String         @id @default(cuid())
+  name              String
+  slug              String         @unique
+  logoUrl           String?
+  phone             String?
+  address           String?
+  currency          String         @default("INR")
+  currencySymbol    String         @default("₹")
+  taxRate           Float          @default(5.0) // 5% GST
+  serviceChargeRate Float          @default(0.0) // 0% default
+  isOpen            Boolean        @default(true)
+  enableTableFavorites Boolean     @default(true)
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  users             User[]
+  customers         Customer[]
+  tables            Table[]
+  categories        MenuCategory[]
+  menuItems         MenuItem[]
+  orders            Order[]
+  payments          Payment[]
+  waiterRequests    WaiterRequest[]
+  customerOtps      CustomerOtp[]
+}
+
+model User {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  name         String
+  email        String     @unique
+  passwordHash String
+  role         String     @default("ADMIN") // ADMIN, STAFF
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([restaurantId])
+}
+
+model Customer {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  name         String
+  email        String?
+  phone        String
+  passwordHash String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  orders       Order[]
+
+  @@unique([restaurantId, phone])
+  @@index([restaurantId])
+  @@index([phone])
+}
+
+model CustomerOtp {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  phone        String
+  name         String?
+  otpHash      String
+  expiresAt    DateTime
+  attempts     Int        @default(0)
+  maxAttempts  Int        @default(5)
+  resendAfter  DateTime
+  isUsed       Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+
+  @@index([restaurantId, phone])
+  @@index([phone])
+}
+
+model Table {
+  id           String         @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant     @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  tableNumber  String         // e.g. "Table 01", "01"
+  token        String         @unique // Secure random unguessable token
+  capacity     Int            @default(4)
+  isActive     Boolean        @default(true)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  orders         Order[]
+  sessions       OrderSession[]
+  waiterRequests WaiterRequest[]
+
+  @@index([restaurantId])
+}
+
+model MenuCategory {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  name         String
+  sortOrder    Int        @default(0)
+  isActive     Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  items        MenuItem[]
+
+  @@index([restaurantId])
+}
+
+model MenuItem {
+  id           String       @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  categoryId   String
+  category     MenuCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name         String
+  description  String
+  price        Float
+  imageUrl     String?
+  isVeg        Boolean      @default(true)
+  isAvailable  Boolean      @default(true)
+  isFeatured   Boolean      @default(false)
+  sortOrder    Int          @default(0)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  orderItems          OrderItem[]
+  customizationGroups CustomizationGroup[]
+
+  @@index([restaurantId])
+  @@index([categoryId])
+}
+
+model OrderSession {
+  id            String     @id @default(cuid())
+  restaurantId  String
+  tableId       String
+  table         Table      @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  sessionToken  String     @unique
+  customerName  String?
+  customerPhone String?
+  isActive      Boolean    @default(true)
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  orders        Order[]
+
+  @@index([restaurantId, tableId])
+}
+
+model Order {
+  id            String       @id @default(cuid())
+  orderNumber   Int          // sequential order number within restaurant
+  restaurantId  String
+  restaurant    Restaurant   @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  tableId       String
+  table         Table        @relation(fields: [tableId], references: [id], onDelete: Restrict)
+  sessionId     String?
+  session       OrderSession? @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  customerId    String?
+  customer      Customer?    @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  orderToken    String       @unique // secure public order tracking token
+  customerName  String?
+  customerPhone String?
+  customerNote  String?
+  subtotal      Float
+  taxAmount     Float
+  serviceCharge Float        @default(0.0)
+  totalAmount   Float
+  status        String       @default("PENDING") // PENDING, CONFIRMED, PREPARING, READY, SERVED, CANCELLED
+  paymentStatus String       @default("PENDING") // PENDING, COMPLETED, FAILED
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  items         OrderItem[]
+  payments      Payment[]
+
+  @@index([restaurantId, status])
+  @@index([restaurantId, createdAt])
+  @@index([orderToken])
+  @@index([customerId])
+  @@index([tableId, paymentStatus, status, createdAt])
+}
+
+model OrderItem {
+  id                  String                   @id @default(cuid())
+  orderId             String
+  order               Order                    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  menuItemId          String?
+  menuItem            MenuItem?                @relation(fields: [menuItemId], references: [id], onDelete: SetNull)
+  nameSnapshot        String
+  priceSnapshot       Float
+  quantity            Int
+  itemTotal           Float
+  specialInstructions String?
+  customizations      OrderItemCustomization[]
+
+  @@index([orderId])
+  @@index([menuItemId])
+}
+
+model Payment {
+  id               String     @id @default(cuid())
+  orderId          String
+  order            Order      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  restaurantId     String
+  restaurant       Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  gateway          String     @default("RAZORPAY")
+  gatewayOrderId   String?
+  gatewayPaymentId String?
+  gatewaySignature String?
+  amount           Float
+  currency         String     @default("INR")
+  status           String     @default("PENDING") // PENDING, SUCCESS, FAILED
+  failureReason    String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+
+  @@index([orderId])
+  @@index([gatewayOrderId])
+  @@index([restaurantId])
+}
+
+model WaiterRequest {
+  id             String     @id @default(cuid())
+  restaurantId   String
+  restaurant     Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  tableId        String
+  table          Table      @relation(fields: [tableId], references: [id], onDelete: Cascade)
+  status         String     @default("PENDING") // PENDING, ACKNOWLEDGED, COMPLETED, CANCELLED
+  reason         String?    // e.g. "Refill Water", "Extra Napkins & Cutlery", "Assistance with Menu", "Request the Check", "Clean Table"
+  note           String?    // Optional customer note
+  acknowledgedAt DateTime?
+  completedAt    DateTime?
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+
+  @@index([restaurantId, status])
+  @@index([tableId, status])
+}
+
+model CustomizationGroup {
+  id            String                @id @default(cuid())
+  menuItemId    String
+  menuItem      MenuItem              @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  name          String                // e.g. "Espresso Shots", "Milk Option", "Extras"
+  type          String                @default("SINGLE") // SINGLE, MULTI
+  required      Boolean               @default(false)
+  minSelections Int                   @default(0)
+  maxSelections Int                   @default(1)
+  sortOrder     Int                   @default(0)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+
+  options       CustomizationOption[]
+
+  @@index([menuItemId])
+}
+
+model CustomizationOption {
+  id                   String             @id @default(cuid())
+  customizationGroupId String
+  customizationGroup   CustomizationGroup @relation(fields: [customizationGroupId], references: [id], onDelete: Cascade)
+  name                 String             // e.g. "Oat Milk", "2 Shots", "Extra Cheese"
+  priceAddition        Float              @default(0.0)
+  isAvailable          Boolean            @default(true)
+  sortOrder            Int                @default(0)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@index([customizationGroupId])
+}
+
+model OrderItemCustomization {
+  id            String    @id @default(cuid())
+  orderItemId   String
+  orderItem     OrderItem @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  groupName     String
+  optionName    String
+  priceAddition Float     @default(0.0)
+  createdAt     DateTime  @default(now())
+
+  @@index([orderItemId])
+}

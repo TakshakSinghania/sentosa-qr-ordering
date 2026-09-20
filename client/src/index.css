@@ -1,0 +1,323 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --canvas: #ebeae7;
+    --surface: #ffffff;
+    --surface-muted: #f4f3f0;
+    --line: #bdb8ad;
+    --ink: #5b554f;
+    --ink-muted: #8d7d6d;
+    --accent: #6492b3;
+    --accent-hover: #4f7897;
+  }
+
+  body {
+    background-color: var(--canvas);
+    color: var(--ink);
+    font-family: 'Plus Jakarta Sans', Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  button, a {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Consistent custom focus rings for accessibility */
+  :focus-visible {
+    outline: 2px solid #6492b3;
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* =========================================================
+     1. TACTILE INSTANT-RESPONSE BUTTONS (Apple Design §1, §4)
+     Zero pointer latency, subtle scale down on active press
+     ========================================================= */
+  .touch-press {
+    transition: transform 100ms cubic-bezier(0.2, 0, 0, 1), background-color 150ms ease, opacity 150ms ease;
+  }
+  .touch-press:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  .btn-primary {
+    background-color: #6492b3;
+    color: #ffffff !important;
+    font-weight: 600;
+    transition: transform 100ms cubic-bezier(0.2, 0, 0, 1), background-color 150ms ease;
+  }
+  .btn-primary:hover:not(:disabled) {
+    background-color: #4f7897;
+    color: #ffffff !important;
+  }
+  .btn-primary:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn-primary:disabled {
+    background-color: #bdb8ad;
+    color: #ffffff !important;
+    cursor: not-allowed;
+    opacity: 0.75;
+  }
+
+  .btn-secondary {
+    background-color: #ebeae7;
+    color: #5b554f !important;
+    font-weight: 600;
+    border: 1px solid #bdb8ad;
+    transition: transform 100ms cubic-bezier(0.2, 0, 0, 1), background-color 150ms ease;
+  }
+  .btn-secondary:hover:not(:disabled) {
+    background-color: #dedbd2;
+    color: #3a3530 !important;
+  }
+  .btn-secondary:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn-secondary:disabled {
+    background-color: #f4f3f0;
+    color: #bdb8ad !important;
+    border-color: #e5e3dc;
+    cursor: not-allowed;
+  }
+
+  .btn-outline {
+    background-color: #ffffff;
+    color: #5b554f !important;
+    font-weight: 500;
+    border: 1px solid #bdb8ad;
+    transition: transform 100ms cubic-bezier(0.2, 0, 0, 1), border-color 150ms ease, background-color 150ms ease;
+  }
+  .btn-outline:hover:not(:disabled) {
+    background-color: #f4f3f0;
+    border-color: #6492b3;
+    color: #4f7897 !important;
+  }
+  .btn-outline:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn-outline:disabled {
+    color: #bdb8ad !important;
+    border-color: #e5e3dc;
+    cursor: not-allowed;
+  }
+
+  /* =========================================================
+     2. REFINED TRANSLUCENT SURFACES & FLOATING CHROME (Apple Design §12)
+     Backdrop blur, specular light-catching top border, high contrast.
+     ========================================================= */
+
+  /* Deep warm charcoal translucent glass with crisp white text */
+  .btn-glass-primary {
+    background: rgba(91, 85, 79, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 8px rgba(0, 0, 0, 0.12);
+    font-weight: 600;
+    transition: transform 100ms cubic-bezier(0.2, 0, 0, 1), background 150ms ease;
+  }
+  .btn-glass-primary:hover:not(:disabled) {
+    background: rgba(58, 53, 48, 0.98);
+    color: #ffffff !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 4px 14px rgba(0, 0, 0, 0.18);
+  }
+  .btn-glass-primary:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn-glass-primary:disabled {
+    background: rgba(189, 184, 173, 0.65);
+    color: #ffffff !important;
+    cursor: not-allowed;
+    box-shadow: none;
+  }
+
+  /* Light translucent glass with charcoal text */
+  .btn-glass-secondary {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: #5b554f !important;
+    border: 1px solid rgba(189, 184, 173, 0.8);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 2px rgba(91, 85, 79, 0.04);
+    font-weight: 500;
+    transition: transform 100ms cubic-bezier(0.2, 0, 0, 1), background 150ms ease;
+  }
+  .btn-glass-secondary:hover:not(:disabled) {
+    background: rgba(244, 243, 240, 0.95);
+    color: #3a3530 !important;
+    border-color: rgba(100, 146, 179, 0.6);
+  }
+  .btn-glass-secondary:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  .btn-glass-secondary:disabled {
+    background: rgba(244, 243, 240, 0.5);
+    color: #bdb8ad !important;
+    border-color: rgba(189, 184, 173, 0.4);
+    cursor: not-allowed;
+  }
+
+  /* Selected state: Sentosa Blue tint with crisp contrast */
+  .btn-glass-selected {
+    background: rgba(232, 239, 244, 0.95) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #4f7897 !important;
+    border: 1.5px solid #6492b3 !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 2px 6px rgba(100, 146, 179, 0.16);
+    font-weight: 600;
+    transition: transform 100ms cubic-bezier(0.2, 0, 0, 1);
+  }
+  .btn-glass-selected:active {
+    transform: scale(0.97);
+  }
+
+  /* Glass pill badge */
+  .glass-pill {
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(189, 184, 173, 0.7);
+    box-shadow: 0 1px 2px rgba(91, 85, 79, 0.04);
+  }
+
+  /* Glass Modal & Bottom Sheet Container */
+  .glass-modal-panel {
+    background: rgba(235, 234, 231, 0.98);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(189, 184, 173, 0.8);
+    box-shadow: 0 24px 48px -12px rgba(91, 85, 79, 0.22);
+  }
+
+  /* Floating Bottom Cart Bar */
+  .glass-cart-bar {
+    background: rgba(58, 53, 48, 0.96);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 12px 32px -4px rgba(0, 0, 0, 0.35);
+  }
+
+  /* Tactile craft paper canvas texture */
+  .paper-canvas {
+    background-color: #ebeae7;
+    background-image: radial-gradient(#bdb8ad 0.75px, transparent 0.75px);
+    background-size: 24px 24px;
+  }
+
+  /* Touch Target >=44px */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .pb-safe {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem)) !important;
+  }
+  .pt-safe {
+    padding-top: max(1rem, env(safe-area-inset-top, 1rem)) !important;
+  }
+  .touch-pan-x {
+    touch-action: pan-x;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Sentosa Subtle Scrollbar for Central Menu */
+  .menu-scroll-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(189, 184, 173, 0.6) transparent;
+  }
+  .menu-scroll-container::-webkit-scrollbar {
+    width: 6px;
+  }
+  .menu-scroll-container::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .menu-scroll-container::-webkit-scrollbar-thumb {
+    background-color: rgba(189, 184, 173, 0.55);
+    border-radius: 9999px;
+  }
+  .menu-scroll-container::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(100, 146, 179, 0.85);
+  }
+}
+
+/* =========================================================
+   3. ACCESSIBILITY OVERRIDES (Apple Design §14)
+   ========================================================= */
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .touch-press:active,
+  .btn-primary:active,
+  .btn-secondary:active,
+  .btn-outline:active,
+  .btn-glass-primary:active,
+  .btn-glass-secondary:active {
+    transform: none !important;
+  }
+}
+
+/* Respect reduced-transparency preferences */
+@media (prefers-reduced-transparency: reduce) {
+  .btn-glass-primary,
+  .glass-cart-bar {
+    background: #1c1917 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  .btn-glass-secondary,
+  .glass-pill,
+  .glass-modal-panel {
+    background: #ffffff !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+}
+
+/* Prevent iOS Safari auto-zoom on input focus (<16px triggers zoom) */
+@media screen and (max-width: 640px) {
+  input[type="text"],
+  input[type="tel"],
+  input[type="email"],
+  input[type="search"],
+  input[type="number"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
