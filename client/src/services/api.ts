@@ -104,6 +104,14 @@ export const api = {
   getCustomerProfile: () =>
     apiRequest<{ customer: CustomerProfile }>('/customer/auth/me'),
 
+  getCustomerDemoConfig: () =>
+    apiRequest<{
+      demoMode: boolean;
+      demoPhone?: string;
+      displayPhone?: string;
+      demoCode?: string;
+    }>('/customer/auth/demo-config'),
+
   customerLogout: () =>
     apiRequest<{ success: boolean }>('/customer/auth/logout', {
       method: 'POST',

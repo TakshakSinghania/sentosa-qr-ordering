@@ -14,6 +14,9 @@ export class DevelopmentOtpProvider implements OtpProvider {
       );
     }
   }
+  resolveOtpCode(_phone: string, generatedOtp: string): string {
+    return generatedOtp;
+  }
 
   async sendOtp({ phone, otp, restaurantName }: SendOtpParams): Promise<SendOtpResult> {
     const formattedPhone = phone.replace(/^(\+91)(\d{5})(\d{5})$/, '$1 $2 $3');

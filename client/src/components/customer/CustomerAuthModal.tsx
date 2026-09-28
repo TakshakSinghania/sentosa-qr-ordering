@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Coffee, AlertCircle, Loader2, ArrowRight, ArrowLeft, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { useCustomerAuth } from '../../contexts/CustomerAuthContext.js';
+import { api } from '../../services/api.js';
 
 interface CustomerAuthModalProps {
   isOpen: boolean;
@@ -27,6 +28,12 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({
   const [phone, setPhone] = useState<string>(prefillPhone);
   const [displayPhone, setDisplayPhone] = useState<string>('');
   const [isExistingCustomer, setIsExistingCustomer] = useState<boolean>(false);
+  const [demoConfig, setDemoConfig] = useState<{
+    demoMode: boolean;
+    demoPhone?: string;
+    displayPhone?: string;
+    demoCode?: string;
+  } | null>(null);
 
   // 6 individual OTP digits
   const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '', '', '']);
@@ -54,6 +61,18 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({
       setTimeout(() => {
         phoneInputRef.current?.focus();
       }, 100);
+
+      api.getCustomerDemoConfig()
+        .then((cfg) => {
+          if (cfg && cfg.demoMode) {
+            setDemoConfig(cfg);
+          } else {
+            setDemoConfig(null);
+          }
+        })
+        .catch(() => {
+          setDemoConfig(null);
+        });
     }
   }, [isOpen, prefillName, prefillPhone]);
 
@@ -239,6 +258,46 @@ export const CustomerAuthModal: React.FC<CustomerAuthModalProps> = ({
           <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-xs flex items-start gap-2 animate-fadeIn">
             <AlertCircle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
             <span className="leading-snug">{error}</span>
+          </div>
+        )}
+
+        {/* Recruiter Demo Hint (Only rendered when backend has OTP_PROVIDER=demo) */}
+        {demoConfig?.demoMode && (
+          <div className="mb-4 p-3 rounded-xl bg-[#e8eff4]/80 border border-[#6492b3]/30 text-xs text-[#3a3530] animate-fadeIn">
+            <div className="flex items-center justify-between font-semibold text-[#4f7897] mb-1.5">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#4f7897] animate-pulse" />
+                Recruiter Demo Access
+              </span>
+              {step === 'phone' && demoConfig.demoPhone && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPhone(demoConfig.demoPhone || '');
+                    setName((prev) => prev || 'Recruiter');
+                  }}
+                  className="text-[11px] font-medium text-[#4f7897] hover:text-[#3a3530] underline cursor-pointer"
+                >
+                  Auto-fill
+                </button>
+              )}
+              {step === 'otp' && demoConfig.demoCode && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const digits = (demoConfig.demoCode || '').split('').slice(0, 6);
+                    setOtpDigits(digits);
+                  }}
+                  className="text-[11px] font-medium text-[#4f7897] hover:text-[#3a3530] underline cursor-pointer"
+                >
+                  Fill Code
+                </button>
+              )}
+            </div>
+            <div className="flex items-center justify-between text-[11px] text-[#5b554f]">
+              <span>Demo Phone: <strong className="font-semibold text-[#3a3530]">{demoConfig.displayPhone || demoConfig.demoPhone}</strong></span>
+              <span>Demo Code: <strong className="font-semibold text-[#3a3530]">{demoConfig.demoCode}</strong></span>
+            </div>
           </div>
         )}
 

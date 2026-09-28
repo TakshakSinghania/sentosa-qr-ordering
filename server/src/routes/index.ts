@@ -44,6 +44,7 @@ import {
   verifyCustomerOtp,
   getCurrentCustomer,
   logoutCustomer,
+  getCustomerDemoConfig,
 } from '../controllers/customerAuth.js';
 import {
   getCustomerOrders,
@@ -72,6 +73,7 @@ router.get('/auth/me', authenticateToken, getCurrentUser);
 // ==========================================
 // 2. CUSTOMER AUTHENTICATION (Mobile Phone OTP)
 // ==========================================
+router.get('/customer/auth/demo-config', getCustomerDemoConfig);
 router.post('/customer/auth/send-otp', otpSendRateLimiter, sendCustomerOtp);
 router.post('/customer/auth/verify-otp', otpVerifyRateLimiter, verifyCustomerOtp);
 router.get('/customer/auth/me', authenticateCustomer, getCurrentCustomer);

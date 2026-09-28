@@ -117,9 +117,21 @@ export async function sendCustomerOtp(req: Request, res: Response): Promise<void
     });
 
     // 6. Generate cryptographically secure 6-digit random code
-    const otpCode = crypto.randomInt(100000, 1000000).toString();
+    const generatedOtp = crypto.randomInt(100000, 1000000).toString();
 
-    // 7. Cryptographically hash OTP before persisting in database
+    // 7. Resolve final OTP code via provider (demo provider resolves configured code for demo phone; others use generatedOtp)
+    const provider = getOtpProvider();
+    let otpCode: string;
+    try {
+      otpCode = provider.resolveOtpCode(normalizedPhone, generatedOtp);
+    } catch (resolveErr: any) {
+      res.status(400).json({
+        error: resolveErr.message || 'SMS verification is unavailable for this number in demo mode.',
+      });
+      return;
+    }
+
+    // 8. Cryptographically hash OTP before persisting in database
     const salt = await bcrypt.genSalt(10);
     const otpHash = await bcrypt.hash(otpCode, salt);
 
@@ -140,8 +152,7 @@ export async function sendCustomerOtp(req: Request, res: Response): Promise<void
       },
     });
 
-    // 8. Dispatch code via configured OTP provider (development logs to terminal; production calls SMS gateway)
-    const provider = getOtpProvider();
+    // 9. Dispatch code via configured OTP provider
     const sendResult = await provider.sendOtp({
       phone: normalizedPhone,
       otp: otpCode,
@@ -376,4 +387,31 @@ export async function getCurrentCustomer(req: Request, res: Response): Promise<v
  */
 export async function logoutCustomer(_req: Request, res: Response): Promise<void> {
   res.json({ success: true, message: 'Logged out successfully' });
+}
+
+/**
+ * GET /api/customer/auth/demo-config
+ * Returns public recruiter demo credentials if OTP_PROVIDER=demo.
+ */
+export async function getCustomerDemoConfig(_req: Request, res: Response): Promise<void> {
+  const providerType = (process.env.OTP_PROVIDER || '').toLowerCase().trim();
+  if (providerType === 'demo') {
+    const rawDemoPhone = (process.env.DEMO_OTP_PHONE || '').trim();
+    const phoneResult = normalizeIndianPhoneNumber(rawDemoPhone);
+    const demoPhone = phoneResult.valid ? phoneResult.display || rawDemoPhone : rawDemoPhone;
+    const cleanDigits = rawDemoPhone.replace(/\D/g, '').slice(-10);
+    const demoCode = (process.env.DEMO_OTP_CODE || '').trim();
+
+    res.json({
+      demoMode: true,
+      demoPhone: cleanDigits,
+      displayPhone: demoPhone,
+      demoCode,
+    });
+    return;
+  }
+
+  res.json({
+    demoMode: false,
+  });
 }

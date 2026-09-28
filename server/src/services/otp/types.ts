@@ -11,5 +11,12 @@ export interface SendOtpResult {
 }
 
 export interface OtpProvider {
+  /**
+   * Returns the OTP that should be persisted and delivered.
+   * Normal providers return the securely generated OTP.
+   * Demo provider may return its configured fixed OTP.
+   */
+  resolveOtpCode(phone: string, generatedOtp: string): string;
+
   sendOtp(params: SendOtpParams): Promise<SendOtpResult>;
 }

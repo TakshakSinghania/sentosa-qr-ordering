@@ -72,4 +72,8 @@ export class ProductionSmsOtpProvider implements OtpProvider {
       };
     }
   }
+
+  resolveOtpCode(_phone: string, generatedOtp: string): string {
+    return generatedOtp;
+  }
 }
